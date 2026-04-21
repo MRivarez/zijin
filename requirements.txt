@@ -1,0 +1,40 @@
+# ==========================================
+# ZiJin Core Requirements (Python 3.10)
+# ==========================================
+
+# 1. 云端大脑 && LLM
+langchain==1.2.15
+langchain-community==0.4.1
+zhipuai==2.1.5.20250825      # 智谱GLM官方SDK
+openai==1.109.0              # OpenAI SDK(作为备用或调用兼容接口时使用)
+
+# 2. 中枢神经与通信
+requests==2.32.5             # 用于与WSL中的OpenClaw进行RESTful通信
+pyzmq==26.2.0                # ZeroMQ: 用于四大系统的高并发、低延迟内部通信
+websockets==14.0             # WebSocket: 备用的实时流式通信协议
+
+# 3. 记忆图谱与向量库
+langchain-neo4j==0.9.0
+neo4j==5.26.0                # 官方Neo4j驱动，用于构建语义图谱
+chromadb==1.5.8              # 轻量级本地向量数据库，适合存放情景记忆切片
+mem0ai==2.0.0                # 根据用户纠正自动更新权重的库，中期情景记忆
+
+# 4. 基础代谢与配置工具
+python-dotenv==1.2.2         # 管理API Key和本地路径等环境变量
+colorama==0.4.6              # 控制台终端颜色高亮
+pydantic==2.13.1             # 用于严格约束Agent输出的JSON格式和数据结构
+pydantic-settings==2.13.1    # 统一管理四大系统环境变量
+
+# 5. 本地小脑
+# # 1. 设置环境变量，指示开启CUDA编译
+# $env:CMAKE_ARGS="-DGGML_CUDA=on"
+# $env:FORCE_CMAKE="1"
+# 指定CUDA12.x的预编译包索引
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu121
+llama-cpp-python==0.3.4
+# 强制从指定索引拉取预编译包，并禁止源码编译
+# pip install llama-cpp-python==0.3.20 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu121 --only-binary=llama-cpp-python
+
+# 6. 四肢
+uiautomation==2.0.29
+pyperclip==1.11.0
