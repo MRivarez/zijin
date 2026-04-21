@@ -17,7 +17,7 @@ websockets==14.0             # WebSocket: 备用的实时流式通信协议
 langchain-neo4j==0.9.0
 neo4j==5.26.0                # 官方Neo4j驱动，用于构建语义图谱
 chromadb==1.5.8              # 轻量级本地向量数据库，适合存放情景记忆切片
-mem0ai==2.0.0                # 根据用户纠正自动更新权重的库，中期情景记忆
+mem0ai==1.0.11                # 根据用户纠正自动更新权重的库，中期情景记忆
 
 # 4. 基础代谢与配置工具
 python-dotenv==1.2.2         # 管理API Key和本地路径等环境变量
@@ -37,4 +37,3 @@ llama-cpp-python==0.3.4
 
 # 6. 四肢
 uiautomation==2.0.29
-pyperclip==1.11.0

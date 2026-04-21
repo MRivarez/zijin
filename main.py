@@ -5,6 +5,7 @@ import requests
 from colorama import init, Fore, Style
 from zhipuai import ZhipuAI
 from memory_core import ZiJinMemorySystem  # 导入写好的记忆中枢
+from mano_p_wechat import trigger_wechat_message
 
 init(autoreset=True)
 load_dotenv()
@@ -42,6 +43,28 @@ tools = [
                     }
                 },
                 "required": ["action_intent"]
+            }
+        }
+    },
+    {
+        # Mano-P微信通讯工具
+        "type": "function",
+        "function": {
+            "name": "send_wechat_message",
+            "description": "当你需要通过微信主动联系某人，或用户明确要求你通过微信发消息时，调用此工具。注意：必须提供准确的联系人微信备注名。",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "target_name": {
+                        "description": "联系人在微信中的精确备注名或昵称，例如 '文件传输助手'",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "你要发送的拟人化文本内容",
+                        "type": "string"
+                    }
+                },
+                "required": ["target_name", "message"]
             }
         }
     }
@@ -137,26 +160,34 @@ def zijin_life_cycle():
                     function_name = tool_call.function.name
                     function_args = json.loads(tool_call.function.arguments)
 
+                    tool_result = ""
+
+                    # 路由 1：底层系统操作 -> 转发给 WSL 的 OpenClaw
                     if function_name == "execute_physical_action":
                         action_intent = function_args.get("action_intent")
-                        # 执行物理操作
                         tool_result = execute_physical_action(action_intent)
 
-                        # 把执行结果再丢给大模型总结汇报
-                        conversation_history.append({
-                            "role": "tool",
-                            "content": tool_result,
-                            "tool_call_id": tool_call.id
-                        })
+                    # 路由 2：社交通讯操作 -> 转发给 Windows 的 Mano-P
+                    elif function_name == "send_wechat_message":
+                        target_name = function_args.get("target_name")
+                        message = function_args.get("message")
+                        tool_result = trigger_wechat_message(target_name, message)
 
-                        print(Fore.LIGHTBLACK_EX + "(ZiJin 正在组织语言汇报...)")
-                        second_response = client.chat.completions.create(
-                            model="glm-4",
-                            messages=conversation_history
-                        )
-                        final_reply = second_response.choices[0].message.content
-                        print(Fore.MAGENTA + Style.BRIGHT + f"\n[ZiJin] {final_reply}")
-                        conversation_history.append({"role": "assistant", "content": final_reply})
+                    # 将执行结果反馈给大模型
+                    conversation_history.append({
+                        "role": "tool",
+                        "content": tool_result,
+                        "tool_call_id": tool_call.id
+                    })
+
+                    print(Fore.LIGHTBLACK_EX + "(ZiJin 正在组织语言汇报...)")
+                    second_response = client.chat.completions.create(
+                        model="glm-4",
+                        messages=conversation_history
+                    )
+                    final_reply = second_response.choices[0].message.content
+                    print(Fore.MAGENTA + Style.BRIGHT + f"\n[ZiJin] {final_reply}")
+                    conversation_history.append({"role": "assistant", "content": final_reply})
 
             # --- 第四阶段：纯粹的灵魂交流 ---
             else:
