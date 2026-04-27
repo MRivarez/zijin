@@ -65,7 +65,7 @@ class H_ECA_Engine:
         """
         try:
             response = client.chat.completions.create(
-                model="glm-4",
+                model="glm-4-flash-250414",
                 messages=[{"role": "user", "content": prompt}],
                 response_format={"type": "json_object"}
             )

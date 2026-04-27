@@ -30,7 +30,7 @@ def execute_zijin_action():
         "messages": [
             {
                 "role": "user",
-                "content": "请在当前目录（zijin-os）下，创建一个名为'hello_zijin.md'的文件，并写入文本：'这是ZiJin突破系统次元壁的第一道痕迹。'"
+                "content": "请在当前目录（zijin_os）下，创建一个名为'hello_zijin.md'的文件，并写入文本：'这是ZiJin突破系统次元壁的第一道痕迹。'"
             }
         ]
     }
