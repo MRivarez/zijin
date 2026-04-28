@@ -13,7 +13,7 @@ class EmotionEngine:
         self.state = EmotionTensor()
         self.last_update_time = time.time()
 
-        # 稳态基准线(Homeostatic Setpoints)
+        # 稳态基准线
         # 默认ZiJin处于情绪中性、稍微安静、中等支配感、不孤独的状态
         self.baselines = {
             "valence": 0.0,
@@ -22,7 +22,7 @@ class EmotionEngine:
             "loneliness": 0.0
         }
 
-        # 稳态回归速率(Lambda)
+        # 稳态回归速率
         self.decay_rates = {
             "valence": 0.005,    # 情绪平复的速度
             "arousal": 0.01,     # 激动/困倦消退的速度
@@ -30,7 +30,7 @@ class EmotionEngine:
             "loneliness": 0.001  # 孤独感积累的速度 (负向衰减)
         }
 
-        # 启发式情感映射词典(替代复杂的嵌套if/else)
+        # 启发式情感映射词典
         self.sentiment_weights = {
             "negative": {"words": ["烦", "累", "痛", "难受", "报错", "失败", "唉", "想你"], "v_shift": -0.3,
                          "a_shift": 0.2},
@@ -103,7 +103,7 @@ class EmotionEngine:
         self.state.arousal += total_arousal_shift
 
     def _clip_tensor(self):
-        """张量绝对物理边界收束 (-1.0 到 1.0)"""
+        """张量绝对物理边界收束(-1.0到1.0)"""
         self.state.valence = max(-1.0, min(1.0, self.state.valence))
         self.state.arousal = max(-1.0, min(1.0, self.state.arousal))
         self.state.dominance = max(-1.0, min(1.0, self.state.dominance))

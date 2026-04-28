@@ -34,22 +34,37 @@ const envConfig = reactive({
   EMBEDDING_MODEL: 'BAAI/bge-small-zh-v1.5',
   LLM_BASE_URL: 'https://open.bigmodel.cn/api/paas/v4/',
   LLM_API_KEY: '', CREATOR_QQ: '', NAPCAT_TOKEN: '',
-  NEO4J_URI: 'bolt://localhost:7687', NEO4J_USER: 'neo4j', NEO4J_PASS: ''
+  NEO4J_URI: 'bolt://localhost:7687', NEO4J_USER: 'neo4j', NEO4J_PASS: '',
+  creatorName: '', zijinTrait: '', relation: ''
 })
 
 const emotionTensor = reactive({ loneliness: 0.85, arousal: 0.62, valence: 0.45, tension: 0.30 })
 
 let heartbeatTimer = null
-onMounted(() => {
-  heartbeatTimer = setInterval(async () => {
-    try {
-      const res = await fetch('http://127.0.0.1:8000/api/sensor/emotion')
+let failCount = 0
+
+const pollEmotion = async () => {
+  try {
+    const res = await fetch('http://127.0.0.1:8000/api/sensor/emotion')
+    if (res.ok) {
+      failCount = 0
       const data = await res.json()
       if (data.status === 'success') Object.assign(emotionTensor, data)
-    } catch (err) { }
-  }, 1000)
+    } else {
+      failCount++
+    }
+  } catch (err) {
+    failCount++
+  }
+  // 如果后端未启动或连接失败超过3次，则将轮询间隔拉长到10秒，避免无意义的浏览器网络报错刷屏
+  const nextInterval = failCount > 3 ? 10000 : 1000;
+  heartbeatTimer = setTimeout(pollEmotion, nextInterval)
+}
+
+onMounted(() => {
+  pollEmotion()
 })
-onUnmounted(() => { if (heartbeatTimer) clearInterval(heartbeatTimer) })
+onUnmounted(() => { if (heartbeatTimer) clearTimeout(heartbeatTimer) })
 </script>
 
 <template>
@@ -87,9 +102,9 @@ onUnmounted(() => { if (heartbeatTimer) clearInterval(heartbeatTimer) })
 
 
     <div class="fluid-track" :style="{ transform: `translateY(-${currentScreen * 100}vh)` }">
-      <ScreenQingQing :isActive="currentScreen === 0" />
+      <ScreenQingQing :isActive="currentScreen === 0" @slide-next="slideTo(1)" />
       <ScreenLingShu :isActive="currentScreen === 1" :config="envConfig" @save="slideTo(2)" />
-      <ScreenFuHun :isActive="currentScreen === 2" :soul="envConfig" @save="slideTo(3)" />
+      <ScreenFuHun :isActive="currentScreen === 2" v-model:creatorName="envConfig.creatorName" v-model:zijinTrait="envConfig.zijinTrait" v-model:relation="envConfig.relation" @forge="slideTo(3)" />
       <ScreenYiWang :isActive="currentScreen === 3" :creatorName="envConfig.creatorName" @slide-next="slideTo(4)" />
       <ScreenGuanXin :isActive="currentScreen === 4" :emotionTensor="emotionTensor" />
     </div>

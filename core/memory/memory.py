@@ -127,7 +127,7 @@ class MemoryRouter:
             self.neo4j_driver.close()
 
     def inject_core_persona(self):
-        """将 ZiJin 的灵魂底色和价值观硬编码入图谱"""
+        """将ZiJin的灵魂底色和价值观硬编码入图谱"""
         if not self.neo4j_driver: return
         query = """
         MERGE (z:Persona {name: 'ZiJin'})
@@ -158,13 +158,13 @@ class MemoryRouter:
         print(Fore.CYAN + f"\n[记忆检索] 正在回溯与 '{query}' 相关的记忆...")
 
         # 好像Mem0 v2.0+必须使用filters字典进行维度过滤
-        # 将 user_id 提升为独立的顶级参数传递，满足 Mem0 底层的必填校验
+        # 将user_id提升为独立的顶级参数传递，满足Mem0底层的必填校验
         relevant_memories = self.mem0.search(query, user_id=user_id)
 
         if not relevant_memories:
             print(Fore.LIGHTBLACK_EX + "  -> 没有找到相关记忆。")
         else:
-            # 兼容处理：如果底层返回的是字典（如 {"results": [...]}），则提取其列表部分
+            # 如果底层返回的是字典（如 {"results": [...]}），则提取其列表部分
             if isinstance(relevant_memories, dict):
                 # 尝试提取常见的列表字段
                 for key in ["results", "data", "memories"]:
@@ -179,22 +179,22 @@ class MemoryRouter:
             for idx, mem in enumerate(relevant_memories):
                 content = ""
 
-                # 场景1：标准字典结构 {"memory": "...", "id": "..."}
+                # 标准字典结构 {"memory": "...", "id": "..."}
                 if isinstance(mem, dict):
                     # 兼容新老版本的键名差异
                     content = mem.get("memory") or mem.get("text") or str(mem)
 
-                # 场景2：纯字符串列表 ["...", "..."]
+                # 纯字符串列表 ["...", "..."]
                 elif isinstance(mem, str):
                     content = mem
 
-                # 场景3：面向对象结构（Pydantic 模型等）
+                # 面向对象结构（Pydantic模型等）
                 elif hasattr(mem, "memory"):
                     content = mem.memory
                 elif hasattr(mem, "text"):
                     content = mem.text
 
-                # 兜底：直接转换为字符串
+                # 直接转换为字符串
                 else:
                     content = str(mem)
 
@@ -211,15 +211,15 @@ class GenesisSeeder:
         self.memory = memory_system
 
     def seed_from_text(self, markdown_path):
-        """解析并注入绝对价值观到 Neo4j"""
-        # 提取关键实体，调用 self.memory.inject_core_persona()
+        """解析并注入绝对价值观到Neo4j"""
+        # 提取关键实体，调用self.memory.inject_core_persona()
         pass
 
     def seed_from_chat_export(self, csv_or_json_path):
         """处理导出的聊天记录"""
         # 1. 离线清洗数据
-        # 2. 调用 LLM 进行批量语义压缩
-        # 3. 循环调用 self.memory.add_episodic_memory() 批量打入 Mem0
+        # 2. 调用LLM进行批量语义压缩
+        # 3. 循环调用self.memory.add_episodic_memory()批量打入Mem0
         pass
 
     def seed_from_images(self, image_folder_path):

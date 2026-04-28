@@ -336,7 +336,7 @@ class ZiJinLifeSystem:
         import webbrowser
         from tools.genesis_api import app
 
-        print(Fore.CYAN + "正在编译并挂载 Web 创世控制器...")
+        print(Fore.CYAN + "正在编译并挂载Web创世控制器...")
         # 绑定情绪张量给 API
         app.state.emotion_tensor = self.shared_emotion
 

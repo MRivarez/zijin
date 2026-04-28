@@ -72,7 +72,7 @@ class ZiJinSubconscious:
 
     async def live_loop(self):
         print(Fore.CYAN + "========================================")
-        print(Fore.CYAN + "   ZiJin 开始在后台静静生活...   ")
+        print(Fore.CYAN + "   ZiJin开始在后台静静生活...   ")
         print(Fore.CYAN + "========================================\n")
 
         while True:
@@ -84,7 +84,7 @@ class ZiJinSubconscious:
 
             # 1. 脑海中闪过一丝念头
             spark = await self.get_random_memory_spark()
-            print(Fore.LIGHTBLACK_EX + f"(ZiJin 的脑海中闪过: '{spark}')")
+            print(Fore.LIGHTBLACK_EX + f"(ZiJin的脑海中闪过: '{spark}')")
 
             # 2. 引入极端的“量子随机扰动”（突破阈值的突发奇想）
             # 有10%的概率，她突然感到极其强烈的冲动，模拟人类没来由的任性

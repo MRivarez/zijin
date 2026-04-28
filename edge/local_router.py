@@ -8,7 +8,7 @@ class CerebellumReflex:
     def __init__(self):
         print(Fore.CYAN + "[Cerebellum] 边缘小脑反射弧已挂载，接管基础动作反馈...")
 
-        # 扁平化的反射策略映射词典，彻底消灭嵌套 if-else
+        # 反射策略映射词典
         self.reflex_strategies = {
             "send_qq_message": self._reflex_qq_message,
             "send_wechat_message": self._reflex_wechat_message,

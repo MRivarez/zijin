@@ -1,7 +1,7 @@
 import os
 import sys
 
-# 设定标准输出编码为 UTF-8 以免 Windows 控制台打印 emoji 崩溃
+# 设定标准输出编码为UTF-8以免Windows控制台打印emoji崩溃
 if sys.stdout.encoding.lower() != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
 
@@ -19,11 +19,11 @@ init(autoreset=True)
 
 app = FastAPI(title="ZiJin Genesis Core")
 
-# Mem0 全局单例（懒加载，等配置就绪后首次调用时初始化）
+# Mem0全局单例（懒加载，等配置就绪后首次调用时初始化）
 _mem0_client = None
 
 def get_mem0_client():
-    """获取 Mem0 单例，避免重复创建导致 Qdrant 锁冲突"""
+    """获取Mem0单例，避免重复创建导致Qdrant锁冲突"""
     global _mem0_client
     if _mem0_client is None:
         # 确保环境变量已就绪
@@ -35,7 +35,7 @@ def get_mem0_client():
         llm_model = os.getenv("LLM_MODEL", "glm-4-flash")
         embedding_model = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
         
-        # 约定：如果是 embedding- 开头就算 openai 供应商，其余暂作 huggingface 开源本地处理
+        # 如果是embedding-开头就算openai供应商，其余暂作huggingface开源本地处理
         embedder_provider = "openai" if embedding_model.startswith("embedding-") else "huggingface"
 
         print(Fore.CYAN + "  [潜意识初始化] 正在连接Mem0向量深渊...")
@@ -161,7 +161,7 @@ async def init_persona(data: PersonaData):
         with driver.session() as session:
             session.run(query, zijinTrait=data.zijinTrait, creator_qq=creator_qq, creatorName=data.creatorName, relation=data.relation)
         driver.close()
-        print(Fore.GREEN + "  ✅ 灵魂基底已刻入 Neo4j 图谱！")
+        print(Fore.GREEN + "  ✅ 灵魂基底已刻入Neo4j图谱！")
         return {"status": "success", "message": "图谱初始化完成"}
     except Exception as e:
         print(Fore.RED + f"  ❌ 图谱刻入失败: {str(e)}")
@@ -251,7 +251,7 @@ async def upload_memory(
 # ==========================================
 @app.get("/api/sensor/emotion")
 async def get_emotion_state(request: Request):
-    # 尝试从 Uvicorn/FastAPI 主体获取实时 EmotionTensor（由 main.py 挂载）
+    # 尝试从Uvicorn/FastAPI主体获取实时EmotionTensor（由main.py挂载）
     if hasattr(request.app.state, "emotion_tensor"):
         emotion = request.app.state.emotion_tensor
         return {
@@ -264,7 +264,7 @@ async def get_emotion_state(request: Request):
     return {"status": "error", "message": "情绪引擎未准备就绪"}
 
 # ==========================================
-# 挂载前端静态资源 (UI 壳)
+# 挂载前端静态资源(UI壳)
 # 必须放在最后以避免拦截 /api 路由
 # ==========================================
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
