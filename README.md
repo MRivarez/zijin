@@ -51,7 +51,7 @@ ZiJin/
 
 ### 2. 获取源代码
 ```bash
-git clone https://github.com/your-username/ZiJin.git
+https://github.com/MRivarez/zijin.git
 cd ZiJin
 ```
 
