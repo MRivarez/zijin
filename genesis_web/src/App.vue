@@ -34,7 +34,7 @@ const envConfig = reactive({
   EMBEDDING_MODEL: 'BAAI/bge-small-zh-v1.5',
   LLM_BASE_URL: 'https://open.bigmodel.cn/api/paas/v4/',
   LLM_API_KEY: '', CREATOR_QQ: '', NAPCAT_TOKEN: '',
-  NEO4J_URI: 'bolt://localhost:7687', NEO4J_USER: 'neo4j', NEO4J_PASS: '',
+  NEO4J_URI: 'bolt://neo4j:7687', NEO4J_USER: 'neo4j', NEO4J_PASS: '',
   creatorName: '', zijinTrait: '', relation: ''
 })
 

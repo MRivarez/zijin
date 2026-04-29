@@ -1,0 +1,70 @@
+services:
+  # ==========================================
+  # 1. 记忆图谱底层(Neo4j)
+  # ==========================================
+  neo4j:
+    image: neo4j:5-community
+    container_name: zijin_neo4j
+    restart: unless-stopped
+    environment:
+      - NEO4J_AUTH=neo4j/zijin2026  # 初始化图谱密码
+    ports:
+      - "7474:7474" # 浏览器可视化端口
+      - "7687:7687" # Bolt协议数据端口
+    volumes:
+      - ./data/neo4j_data:/data   # 【灵魂固化】保证重启不丢图谱数据
+
+  # ==========================================
+  # 2. 物理躯壳网关(NapCatQQ)
+  # ==========================================
+  napcat:
+    image: mlikiowa/napcat-docker:latest
+    container_name: zijin_napcat
+    restart: always
+    environment:
+      - ACCOUNT=12345678        # 【注意】此处要替换成ZiJin的QQ号（你的小号）
+      - MODE=ws
+      - NAPCAT_GID=0
+      - NAPCAT_UID=0
+      - WS_PORT=3001
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "6099:6099"
+    volumes:
+      - ./data/napcat_config:/app/config # 【登录固化】挂载后只需扫码一次
+      - ./data/napcat_qq:/app/.config/QQ
+
+  # ==========================================
+  # 3. 精神中枢(FastAPI + AI核心)
+  # ==========================================
+  backend:
+    build:
+      context: ./backend          # 指向后端的Dockerfile
+    container_name: zijin_core
+    restart: always
+    depends_on:
+      - neo4j                     # 确保先起数据库
+      - napcat                    # 确保先起躯壳
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/.env:/app/.env  # 挂载灵枢配置
+      - ./data/evolved_rules:/app/zijin_os/skills/evolved_rules # 挂载可进化的MD文件
+    environment:
+      # 内部网络穿透
+      - NEO4J_URI=bolt://neo4j:7687
+      - NAPCAT_WS=ws://napcat:3001
+
+  # ==========================================
+  # 4. 创世孵化舱(Vue3前端)
+  # ==========================================
+  frontend:
+    build:
+      context: ./genesis_web      # 指向前端的Dockerfile
+    container_name: zijin_genesis
+    restart: always
+    ports:
+      - "80:80"                   # 直接占宿主机80端口，浏览器直接访问IP即可
+    depends_on:
+      - backend
